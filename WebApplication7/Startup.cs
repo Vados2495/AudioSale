@@ -9,15 +9,15 @@ namespace WebApplication7
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAnyOrigin", builder =>
-                {
-                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-                });
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder => builder.WithOrigins("http://localhost:3000")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
             });
         }
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseCors("AllowAnyOrigin");
+            app.UseCors("AllowSpecificOrigin");
         }
     }
 }
