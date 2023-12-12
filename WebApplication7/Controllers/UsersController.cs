@@ -10,10 +10,12 @@ namespace WebApplication7.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(ApplicationDbContext context, ILogger<UsersController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/users
@@ -41,10 +43,17 @@ namespace WebApplication7.Controllers
         [HttpPost]
         public ActionResult<User> CreateUser(User user)
         {
-            _context.Users.Add(user);
-            _context.SaveChanges();
-
-            return CreatedAtAction(nameof(GetUserById), new { id = user.UserID }, user);
+            try
+            {
+                _context.Users.Add(user);
+                _context.SaveChanges();
+                return CreatedAtAction(nameof(GetUserById), new { id = user.UserID }, user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating user");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error occurred while creating user");
+            }
         }
 
         // PUT: api/users/{id}
